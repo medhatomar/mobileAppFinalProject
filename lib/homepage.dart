@@ -297,7 +297,7 @@ class _homePageState extends State<homePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: SizedBox(
-                height: 100,
+                height: 106,
                 width: MediaQuery.of(context).size.width,
                 child: Card(
                   color: Colors.white,
@@ -357,7 +357,7 @@ class _homePageState extends State<homePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: SizedBox(
-                height: 100,
+                height: 106,
                 width: MediaQuery.of(context).size.width,
                 child: Card(
                   color: Colors.white,
@@ -418,11 +418,12 @@ class _homePageState extends State<homePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: SizedBox(
-                height: 130,
+                height: 136,
                 width: MediaQuery.of(context).size.width,
                 child: Card(
                   color: Colors.white,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         children: [
@@ -470,14 +471,18 @@ class _homePageState extends State<homePage> {
                       SizedBox(
                         width: 25,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: Image(
-                          image:
-                              AssetImage('assets/images/realhomevisitnew.png'),
-                          width: 200,
-                          height: 390,
-                        ),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                            child: Image(
+                              image: AssetImage(
+                                  'assets/images/realhomevisitnew.png'),
+                              width: 200,
+                              height: 390,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -490,11 +495,12 @@ class _homePageState extends State<homePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: SizedBox(
-                height: 130,
+                height: 136,
                 width: MediaQuery.of(context).size.width,
                 child: Card(
                   color: Colors.white,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         children: [
