@@ -1,5 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 import 'package:flutter/material.dart';
+import 'package:mobile_app_final/CitySelection.dart';
+import 'package:mobile_app_final/activity.dart';
+import 'package:mobile_app_final/myprofile.dart';
+import 'package:mobile_app_final/pharmacy.dart';
+import 'package:mobile_app_final/procedures.dart';
+import 'clinicvisit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:provider/provider.dart'; // Import the provider package
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -8,7 +17,34 @@ class homePage extends StatefulWidget {
   State<homePage> createState() => _homePageState();
 }
 
-class _homePageState extends State<homePage> {
+class _homePageState extends State<homePage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // You can refresh the data on init as well
+    _refreshAppointments();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _refreshAppointments() async {
+    final model = Provider.of<AppointmentModel>(context, listen: false);
+    await model.fetchAppointments();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      _refreshAppointments(); // Automatically refresh when app comes to foreground
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,23 +79,32 @@ class _homePageState extends State<homePage> {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image(
-                              image: AssetImage(
-                                  'assets/images/clinicvisitnew.png'),
-                              width: 75,
-                              height: 60,
-                            ),
-                            Text(
-                              'Clinic Visit',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CitySelectionScreen()),
+                          );
+                        },
+                        child: Card(
+                          color: Colors.white,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image(
+                                image: AssetImage(
+                                    'assets/images/clinicvisitnew.png'),
+                                width: 75,
+                                height: 60,
+                              ),
+                              Text(
+                                'Clinic Visit',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -69,23 +114,39 @@ class _homePageState extends State<homePage> {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image(
-                              image: AssetImage(
-                                  'assets/images/pharmacyimagenew.png'),
-                              width: 75,
-                              height: 60,
-                            ),
-                            Text(
-                              'Pharmacy',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                      child: GestureDetector(
+                        onTap: () {
+                          final userId = FirebaseAuth.instance.currentUser?.uid;
+                          if (userId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Pharmacy(userId: userId),
+                              ),
+                            );
+                          } else {
+                            // Handle the case where user is not logged in
+                            print('User is not logged in.');
+                          }
+                        },
+                        child: Card(
+                          color: Colors.white,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image(
+                                image: AssetImage(
+                                    'assets/images/pharmacyimagenew.png'),
+                                width: 75,
+                                height: 60,
+                              ),
+                              Text(
+                                'Pharmacy',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -157,23 +218,32 @@ class _homePageState extends State<homePage> {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image(
-                              image: AssetImage(
-                                  'assets/images/procedureimagenew.png'),
-                              width: 75,
-                              height: 60,
-                            ),
-                            Text(
-                              'Procedures',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            )
-                          ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => procedures()),
+                          );
+                        },
+                        child: Card(
+                          color: Colors.white,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image(
+                                image: AssetImage(
+                                    'assets/images/procedureimagenew.png'),
+                                width: 75,
+                                height: 60,
+                              ),
+                              Text(
+                                'Procedures',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -316,35 +386,48 @@ class _homePageState extends State<homePage> {
                         SizedBox(
                           height: 2,
                         ),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {});
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to clinicvisit screen when the TextField area is tapped
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CitySelectionScreen()), // Replace with your desired screen
+                            );
                           },
-                          decoration: InputDecoration(
-                            hintText:
-                                'Search for specialty, doctor, or hospital',
-                            hintStyle: TextStyle(
-                              color: Color(0xffa9a9a9),
-                            ),
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Color(0xffa9a9a9)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  color: Color(
-                                      0xffa9a9a9)), // Same border color when focused
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  color: Color(
-                                      0xffa9a9a9)), // Border color when enabled
+                          child: AbsorbPointer(
+                            // Prevents GestureDetector from blocking TextField tap
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              decoration: InputDecoration(
+                                hintText:
+                                    'Search for specialty, doctor, or hospital',
+                                hintStyle: TextStyle(
+                                  color: Color(0xffa9a9a9),
+                                ),
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -376,36 +459,44 @@ class _homePageState extends State<homePage> {
                         SizedBox(
                           height: 2,
                         ),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {});
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Pharmacy()),
+                            );
                           },
-                          decoration: InputDecoration(
-                            hintText: 'Search for medicine',
-                            hintStyle: TextStyle(
-                              color: Color(0xffa9a9a9),
-                            ),
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                color: Color(0xffa9a9a9),
+                          child: AbsorbPointer(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Search for medicine',
+                                hintStyle: TextStyle(
+                                  color: Color(0xffa9a9a9),
+                                ),
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:
+                                      BorderSide(color: Color(0xffa9a9a9)),
+                                ),
                               ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  color: Color(
-                                      0xffa9a9a9)), // Same border color when focused
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  color: Color(
-                                      0xffa9a9a9)), // Border color when enabled
-                            ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -478,7 +569,7 @@ class _homePageState extends State<homePage> {
                             child: Image(
                               image: AssetImage(
                                   'assets/images/realhomevisitnew.png'),
-                              width: 200,
+                              width: 130,
                               height: 390,
                             ),
                           ),
@@ -553,7 +644,7 @@ class _homePageState extends State<homePage> {
                         child: Image(
                           image:
                               AssetImage('assets/images/mobiledoctornew.png'),
-                          width: 200,
+                          width: 123,
                           height: 390,
                         ),
                       ),
@@ -562,105 +653,143 @@ class _homePageState extends State<homePage> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 5,
-            ),
-            SizedBox(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => homePage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  overlayColor: Colors.transparent,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize
+                      .min, // Ensures the column is as small as possible
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                      child: Column(
-                        mainAxisSize: MainAxisSize
-                            .min, // Ensures the column is as small as possible
-                        children: [
-                          Icon(
-                            Icons.home_outlined,
-                            color: Colors.blue,
-                            size:
-                                24, // You can adjust the size of the icon as needed
-                          ),
-                          Text(
-                            'Home',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 12.5,
-                              height:
-                                  1.0, // Reduces line height for tighter spacing
-                            ),
-                          ),
-                        ],
+                    Icon(
+                      Icons.home_outlined,
+                      color: Color(0xff39c4c9),
+                      size: 24, // You can adjust the size of the icon as needed
+                    ),
+                    Text(
+                      'Home',
+                      style: TextStyle(
+                        color: Color(0xff39c4c9),
+                        fontSize: 12.5,
+                        height: 1.0, // Reduces line height for tighter spacing
                       ),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        overlayColor: Colors.transparent,
-                      ),
-                      onPressed: () {},
-                      child: Column(
-                        mainAxisSize: MainAxisSize
-                            .min, // Ensures the column is as small as possible
-                        children: [
-                          Icon(
-                            Icons.calendar_today_outlined,
-                            color: Color(0xffa9a9a9),
-                            size:
-                                24, // You can adjust the size of the icon as needed
-                          ),
-                          Text(
-                            'My Activity',
-                            style: TextStyle(
-                              color: Color(0xffa9a9a9),
-                              fontSize: 12.5,
-                              height:
-                                  1.0, // Reduces line height for tighter spacing
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        overlayColor: Colors.transparent,
-                      ),
-                      onPressed: () {},
-                      child: Column(
-                        mainAxisSize: MainAxisSize
-                            .min, // Ensures the column is as small as possible
-                        children: [
-                          Icon(
-                            color: Color(0xffa9a9a9),
-                            Icons.person,
-                            size:
-                                24, // You can adjust the size of the icon as needed
-                          ),
-                          Text(
-                            'My Profile',
-                            style: TextStyle(
-                              color: Color(0xffa9a9a9),
-                              fontSize: 12.5,
-                              height:
-                                  1.0, // Reduces line height for tighter spacing
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
                   ],
                 ),
               ),
             ),
+            Stack(
+              alignment: Alignment.topRight,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    overlayColor: Colors.transparent,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Activity()),
+                    );
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        color: Colors.grey,
+                        size: 24,
+                      ),
+                      Text(
+                        'My Activity',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12.5,
+                          height: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Display notification badge if there are appointments
+                Consumer<AppointmentModel>(
+                  builder: (context, model, child) {
+                    return Positioned(
+                      right: 8,
+                      top: 2,
+                      child: model.notificationCount > 0
+                          ? CircleAvatar(
+                              radius: 10,
+                              backgroundColor: Colors.red,
+                              child: Text(
+                                '${model.appointments.length}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(), // Don't show if no appointments
+                    );
+                  },
+                ),
+              ],
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                overlayColor: Colors.transparent,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Myprofile()),
+                );
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize
+                    .min, // Ensures the column is as small as possible
+                children: [
+                  Icon(
+                    color: Color(0xffa9a9a9),
+                    Icons.person,
+                    size: 24, // You can adjust the size of the icon as needed
+                  ),
+                  Text(
+                    'My Profile',
+                    style: TextStyle(
+                      color: Color(0xffa9a9a9),
+                      fontSize: 12.5,
+                      height: 1.0, // Reduces line height for tighter spacing
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),

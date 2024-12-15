@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "110011374632",
+    "project_id": "curasync-8dd7a",
+    "storage_bucket": "curasync-8dd7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110011374632:android:0206b12f8555d7e63b291d",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app_final"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9Bnzaox16F7acWUR9EqerdcKeNE-GpM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
