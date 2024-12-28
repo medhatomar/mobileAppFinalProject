@@ -5,6 +5,7 @@ import 'package:mobile_app_final/activity.dart';
 import 'package:mobile_app_final/clinicvisit.dart';
 import 'package:mobile_app_final/homepage.dart';
 import 'package:mobile_app_final/myprofile.dart';
+import 'package:mobile_app_final/offers.dart';
 import 'package:provider/provider.dart'; // Import the provider package
 import 'surgical.dart';
 
@@ -123,7 +124,7 @@ class _proceduresState extends State<procedures> {
               icon: Icons.local_offer_outlined,
               title: 'Offer',
               subtitle: 'Discounts & offers on medical services',
-              destination: CitySelectionScreen()),
+              destination: Offers()),
         ]),
       ),
       bottomNavigationBar: BottomAppBar(

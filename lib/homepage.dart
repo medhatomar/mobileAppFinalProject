@@ -192,23 +192,32 @@ class _homePageState extends State<homePage> with WidgetsBindingObserver {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Card(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image(
-                              image: AssetImage(
-                                  'assets/images/homevisitimagenew.png'),
-                              width: 75,
-                              height: 60,
-                            ),
-                            Text(
-                              'Home Visit',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            )
-                          ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CitySelectionScreen()),
+                          );
+                        },
+                        child: Card(
+                          color: Colors.white,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image(
+                                image: AssetImage(
+                                    'assets/images/homevisitimagenew.png'),
+                                width: 75,
+                                height: 60,
+                              ),
+                              Text(
+                                'Home Visit',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

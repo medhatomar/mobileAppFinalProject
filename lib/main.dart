@@ -29,11 +29,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: Startscreen(),
+      home: Startscreen(),
       // home: ClinicServices(),
       // home: Myprofile(),
       // home: procedures()
-      home: homePage(),
+      // home: homePage(),
       // home: activity()
     );
   }

@@ -1,142 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import the provider package
 import 'package:mobile_app_final/activity.dart';
-import 'package:mobile_app_final/clinicvisit.dart';
 import 'package:mobile_app_final/homepage.dart';
 import 'package:mobile_app_final/myprofile.dart';
+import 'package:provider/provider.dart'; // Import the provider package
 
-class CitySelectionScreen extends StatefulWidget {
+import 'package:mobile_app_final/procedures.dart';
+
+class Offers extends StatefulWidget {
+  const Offers({super.key});
+
   @override
-  _CitySelectionScreenState createState() => _CitySelectionScreenState();
+  State<Offers> createState() => _OffersState();
 }
 
-class _CitySelectionScreenState extends State<CitySelectionScreen> {
-  final List<String> predefinedCities = [
-    "New Cairo",
-    "Nasr City",
-    "El-Shorouk",
-    "Mokattam",
-    "October",
-  ];
-  List<String> selectedCities = []; // List to store selected cities
-  String searchQuery = ""; // To store the user's search query
-
+class _OffersState extends State<Offers> {
   @override
   Widget build(BuildContext context) {
-    // Filter cities based on the search query
-    final filteredCities = predefinedCities
-        .where((city) => city.toLowerCase().contains(searchQuery.toLowerCase()))
-        .toList();
-
     return Scaffold(
-      backgroundColor: const Color(0xfff0f4f7),
+      backgroundColor: Color(0xfff0f4f7),
       appBar: AppBar(
-        backgroundColor: const Color(0xfff0f4f7),
-        title: const Text(
-          'Select Cities',
-          style: TextStyle(
-            color: Color(0xff39c4c9),
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: Color(0xfff0f4f7),
+        title: Text(
+          'Offers',
+          style:
+              TextStyle(color: Color(0xff39c4c9), fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'There are currently no offers available.',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700], // You can customize the color
               ),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: "Search for an area",
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color(0xffa9a9a9)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color(0xffa9a9a9)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: Color(0xffa9a9a9)),
-                  ),
-                ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff39c4c9),
               ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredCities.length,
-              itemBuilder: (context, index) {
-                final city = filteredCities[index];
-                final isSelected = selectedCities.contains(city);
-
-                return Card(
-                  color: Colors.white,
-                  elevation: 4,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: Icon(
-                      isSelected
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank,
-                      color: const Color(0xff39c4c9),
-                    ),
-                    title: Text(
-                      city,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          selectedCities.remove(city);
-                        } else {
-                          selectedCities.add(city);
-                        }
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: selectedCities.isEmpty
-            ? null
-            : () {
+              onPressed: () {
+                // Pass the totalCost to the Payment screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => clinicvisit(
-                      selectedCities: selectedCities,
-                    ),
-                  ),
+                      builder: (context) => procedures() // Pass the total cost
+                      ),
                 );
               },
-        child: const Icon(Icons.arrow_forward),
-        foregroundColor: Colors.white,
-        backgroundColor:
-            selectedCities.isEmpty ? Colors.grey : Color(0xff39c4c9),
+              child: Text(
+                'Back to procedures',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white // You can customize the color
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            )
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
@@ -220,7 +151,7 @@ class _CitySelectionScreenState extends State<CitySelectionScreen> {
                     return Positioned(
                       right: 8,
                       top: 2,
-                      child: model.notificationCount > 0
+                      child: model.appointments.isNotEmpty
                           ? CircleAvatar(
                               radius: 10,
                               backgroundColor: Colors.red,

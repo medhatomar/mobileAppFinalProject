@@ -110,6 +110,34 @@ class _PaymentState extends State<Payment> {
     }
   }
 
+  Future<void> _emptyCart() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      final cartCollection = FirebaseFirestore.instance.collection('Carts');
+      final cartDoc = cartCollection
+          .doc(currentUser.uid); // Use currentUser.uid as the userId
+
+      try {
+        // Clear the items in the cart
+        await cartDoc.update({
+          'items': {}, // Empty the cart
+        });
+
+        // Reset the total cost
+        await cartDoc.update({
+          'totalCost': 0.0, // Reset the total cost
+        });
+
+        print("Cart has been emptied successfully.");
+      } catch (e) {
+        print("Error clearing the cart: $e");
+      }
+    } else {
+      print("No user is logged in.");
+    }
+  }
+
   // Calculate the shipping cost
   double _calculateShippingCost() {
     if (_shippingMethod == 'Standard') {
@@ -325,60 +353,66 @@ class _PaymentState extends State<Payment> {
                 ),
               ),
               actions: [
-                ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () {
-                          // Validate fields
-                          setState(() {
-                            _isCardNumberValid = _cardNumberRegex
-                                .hasMatch(_cardNumberController.text);
-                            _isExpiryDateValid = _expiryDateRegex
-                                .hasMatch(_expiryDateController.text);
-                            _isCVVValid =
-                                _cvvRegex.hasMatch(_cvvController.text);
-                            _isCardHolderValid =
-                                _cardHolderController.text.isNotEmpty;
-                          });
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              // Validate fields
+                              setState(() {
+                                _isCardNumberValid = _cardNumberRegex
+                                    .hasMatch(_cardNumberController.text);
+                                _isExpiryDateValid = _expiryDateRegex
+                                    .hasMatch(_expiryDateController.text);
+                                _isCVVValid =
+                                    _cvvRegex.hasMatch(_cvvController.text);
+                                _isCardHolderValid =
+                                    _cardHolderController.text.isNotEmpty;
+                              });
 
-                          // If all fields are valid, proceed
-                          if (_isCardNumberValid &&
-                              _isExpiryDateValid &&
-                              _isCVVValid &&
-                              _isCardHolderValid) {
-                            setState(() => _isLoading = true);
+                              // If all fields are valid, proceed
+                              if (_isCardNumberValid &&
+                                  _isExpiryDateValid &&
+                                  _isCVVValid &&
+                                  _isCardHolderValid) {
+                                setState(() => _isLoading = true);
 
-                            // Simulate payment processing and navigate
-                            Future.delayed(Duration(seconds: 2), () {
-                              setState(() => _isLoading = false);
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PurchaseSuccessfulPage(),
-                                ),
-                              );
-                            });
-                          }
-                        },
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text('Submit Payment',
-                          style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff39c4c9),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                                // Simulate payment processing and navigate
+                                Future.delayed(Duration(seconds: 2), () {
+                                  setState(() => _isLoading = false);
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PurchaseSuccessfulPage(),
+                                    ),
+                                  );
+                                });
+                              }
+                            },
+                      child: _isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text('Submit Payment',
+                              style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff39c4c9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             );
@@ -869,6 +903,17 @@ class _PaymentState extends State<Payment> {
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 15),
                   child: ElevatedButton(
                     onPressed: () async {
+                      // Get the current user from FirebaseAuth
+                      User? currentUser = FirebaseAuth.instance.currentUser;
+
+                      // Ensure the currentUser is not null
+                      if (currentUser == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('No user is logged in.')),
+                        );
+                        return; // Stop further execution if there's no logged-in user
+                      }
+
                       // Validate the form first
                       if (_formKey.currentState?.validate() ?? false) {
                         // Check if a payment method is selected
@@ -894,6 +939,30 @@ class _PaymentState extends State<Payment> {
                           return; // Stop the function if no shipping method is selected
                         }
 
+                        // Check if the cart is empty
+                        final cartCollection =
+                            FirebaseFirestore.instance.collection('Carts');
+                        final cartDoc = cartCollection.doc(
+                            currentUser.uid); // Use currentUser.uid as user ID.
+                        final cartSnapshot = await cartDoc.get();
+
+                        if (cartSnapshot.exists) {
+                          final cartData =
+                              cartSnapshot.data() as Map<String, dynamic>;
+                          final items =
+                              cartData['items'] as Map<String, dynamic>?;
+
+                          // If cart is empty, show a message
+                          if (items == null || items.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Your cart is empty. Please add items to the cart.')),
+                            );
+                            return; // Stop the function if the cart is empty
+                          }
+                        }
+
                         setState(() {
                           _isLoading =
                               true; // Show loading when validation passes
@@ -908,6 +977,9 @@ class _PaymentState extends State<Payment> {
                           setState(() {
                             _isLoading = false; // Stop loading after processing
                           });
+
+                          // Empty the cart after successful purchase
+                          await _emptyCart(); // Call the empty cart function (correctly)
 
                           // Navigate to the success page
                           Navigator.push(

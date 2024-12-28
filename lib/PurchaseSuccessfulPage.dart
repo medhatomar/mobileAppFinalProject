@@ -7,7 +7,11 @@ class PurchaseSuccessfulPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xfff0f4f7),
       appBar: AppBar(
-        title: Text('Purchase Successful'),
+        title: Text(
+          'Purchase Successful',
+          style:
+              TextStyle(color: Color(0xff39c4c9), fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Color(0xfff0f4f7),
       ),
       body: Center(
@@ -17,7 +21,7 @@ class PurchaseSuccessfulPage extends StatelessWidget {
             Icon(
               Icons.check_circle,
               size: 100,
-              color: Colors.green,
+              color: Color(0xff39c4c9),
             ),
             SizedBox(height: 16),
             Text(
@@ -25,10 +29,20 @@ class PurchaseSuccessfulPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: Color(0xff39c4c9),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 10),
+            // Add the thank you message below
+            Text(
+              'Thank you for choosing Curasync Pharmacy!',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700], // Adjust the color as you like
+              ),
+            ),
+            SizedBox(height: 32), // Add some space
             ElevatedButton(
               onPressed: () {
                 // Go to home page or any other page
@@ -37,7 +51,11 @@ class PurchaseSuccessfulPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => homePage()),
                 );
               },
-              child: Text('Back to Home'),
+              child: Text(
+                'Back to Home',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xff39c4c9),
                 shape: RoundedRectangleBorder(
